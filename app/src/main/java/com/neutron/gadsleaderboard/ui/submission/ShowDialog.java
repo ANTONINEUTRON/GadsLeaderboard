@@ -49,8 +49,8 @@ public class ShowDialog extends Dialog implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.yes_btn:
+                dismiss();
                 SubmitApiBuilder.submitDetails(user,context);
-                 dismiss();
                 break;
             case R.id.cancel_submit:
                 dismiss();

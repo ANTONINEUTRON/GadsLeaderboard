@@ -1,5 +1,7 @@
 package com.neutron.gadsleaderboard.ui.main;
 
+import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.neutron.gadsleaderboard.R;
 
 import java.util.List;
@@ -26,8 +30,8 @@ public class MainFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private PageViewModel pageViewModel;
     private int index;
+    private ConstraintLayout constraintLayout;
 
     public static MainFragment newInstance(int index) {
         MainFragment fragment = new MainFragment();
@@ -49,6 +53,7 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
+        constraintLayout = root.findViewById(R.id.constraintLayout);
         final RecyclerView rv = root.findViewById(R.id.rv);
         if(index==1) {
             showHours(rv);
@@ -73,8 +78,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<HourModel>> call, Throwable t) {
-                Log.e("GET HOUR", "Error in Fetching Content");
-                //Toast(MainActivity.this,"Connection Error",Toast.LENGTH_LONG).show();
+                Log.i("RETRO","Fetch Failure "+t.getMessage());
             }
         };
         call.enqueue(callback);
@@ -83,11 +87,11 @@ public class MainFragment extends Fragment {
     public void showSkilliq(final RecyclerView rv){
         ApiEndpoints apiEndpoints = ApiClient.getRetrofitInstance().create(ApiEndpoints.class);
         Call<List<SkillModel>> call = apiEndpoints.getSkilliq();
-        call.enqueue(new Callback<List<SkillModel>>() {
+        Callback<List<SkillModel>> callback = new Callback<List<SkillModel>>() {
             @Override
             public void onResponse(Call<List<SkillModel>> call, Response<List<SkillModel>> response) {
                 if (response.isSuccessful()) {
-                    SkillRecyclerviewAdapter skillRecyclerviewAdapter = new SkillRecyclerviewAdapter(getContext(),response.body());
+                    SkillRecyclerviewAdapter skillRecyclerviewAdapter = new SkillRecyclerviewAdapter(getContext(), response.body());
                     rv.setAdapter(skillRecyclerviewAdapter);
                     rv.setLayoutManager(new LinearLayoutManager(getContext()));
                 }
@@ -95,8 +99,10 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<SkillModel>> call, Throwable t) {
-                Log.e("GET SKILL","Error in Fetching Content");
+                 Log.i("RETRO","Fetch Failure "+t.getMessage());
             }
-        });
+        };
+        call.enqueue(callback);
     }
+
 }

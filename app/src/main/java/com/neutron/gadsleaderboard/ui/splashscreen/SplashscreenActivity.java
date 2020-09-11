@@ -22,6 +22,6 @@ public class SplashscreenActivity extends AppCompatActivity {
                 startActivity(i);
                 SplashscreenActivity.this.finish();
             }
-        },2000);
+        },4000);
     }
 }

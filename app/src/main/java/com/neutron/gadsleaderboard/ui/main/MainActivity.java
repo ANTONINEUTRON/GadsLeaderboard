@@ -1,12 +1,17 @@
 package com.neutron.gadsleaderboard.ui.main;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,5 +46,28 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        checkForInternet();
+    }
+
+    private void checkForInternet() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = connectivityManager.getActiveNetworkInfo();
+        if(!(ni != null && ni.isConnected())){
+            AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setMessage("Please turn on your internet connection")
+                    .setPositiveButton("Done", new DialogInterface.OnClickListener(){
+
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            MainActivity.this.finish();
+                            Intent intent = new Intent(MainActivity.this,MainActivity.class);
+                            MainActivity.this.startActivity(intent);
+                        }
+                    });
+            alert.create();
+            alert.show();
+        }
     }
 }
