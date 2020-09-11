@@ -1,6 +1,9 @@
 package com.neutron.gadsleaderboard.ui.submission;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.neutron.gadsleaderboard.R;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -14,7 +17,6 @@ public class SubmitApiBuilder {
 
     private static Retrofit retrofit;
     private static final String BASE_URL = "https://docs.google.com/forms/d/e/";
-    private static int responseCode;
 
     public static Retrofit getRetrofitInstance(){
         if(retrofit==null){
@@ -27,7 +29,7 @@ public class SubmitApiBuilder {
         return  retrofit;
     }
 
-    public  static int submitDetails(UserDetailsModel user){
+    public  static void submitDetails(UserDetailsModel user, final Context context){
         SubmitApi submitApi = getRetrofitInstance().create(SubmitApi.class);
         Call<Void> call = submitApi.createPost(
                 user.getEmail(),
@@ -39,16 +41,17 @@ public class SubmitApiBuilder {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if(response.isSuccessful()){
-                    responseCode = response.code();
+                    ShowDialog showDialog = new ShowDialog(context, R.layout.submission_successful_dialog);
+                    showDialog.show();
+                    Log.i(TAG,"Submitted Successfully "+response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                responseCode = 0;
+                ShowDialog showDialog = new ShowDialog(context,R.layout.submission_failed_dialog);
+                showDialog.show();
             }
         });
-
-        return responseCode;
     }
 }
